@@ -27,6 +27,12 @@
         </service>
 
         <service
+            android:name=".BootstrapOwnerService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+        <service
             android:name=".node.NodeService"
             android:enabled="true"
             android:exported="true">

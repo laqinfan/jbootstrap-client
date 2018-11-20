@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
     EditText editText = (EditText) findViewById(R.id.text_main_log);
     editText.setEnabled(false);
 
-    UIHelper.registerOnClick(MainActivity.this, R.id.button_refresh_temperature, new View.OnClickListener() {
+    UIHelper.registerOnClick(MainActivity.this, R.id.button_refresh_temperature,
+            new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         refreshTemp();
