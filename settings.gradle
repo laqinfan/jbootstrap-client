@@ -2,6 +2,8 @@ include ':app'
 
 include ':jndn-node'
 include ':jclient'
+include ':jbootstrap'
 
 project(':jndn-node').projectDir = new File(settingsDir, '../jndn-node')
 project(':jclient').projectDir = new File(settingsDir, '../jclient')
+project(':jbootstrap').projectDir = new File(settingsDir, '../jbootstrap')

@@ -23,11 +23,9 @@ public class TemperatureReaderService extends NodeService {
   public TemperatureReaderService() {
     super();
     Name group = new Name(Global.LOCAL_HOME + "/READ");
-    m_temperatureReader = new TemperatureReader(group);
-    m_temperatureReader.init(
-        new Name(Global.DEVICE_PREFIX + "/temperature-client"),
-        new AndroidConsumerSQLiteDBSource(":memory:")
-    );
+    m_temperatureReader = new TemperatureReader(new Name(Global.DEVICE_PREFIX + "/temperature-client"),
+            group,
+            new AndroidConsumerSQLiteDBSource(":memory:"));
   }
 
   public static Intent newIntent(Context context) {

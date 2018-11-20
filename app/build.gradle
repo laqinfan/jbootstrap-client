@@ -21,8 +21,8 @@ android {
         abortOnError false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -40,7 +40,8 @@ dependencies {
     //    compile 'org.bouncycastle:bcprov-jdk15on:1.57'
     
     compile 'commons-codec:commons-codec:1.10'
-    compile files('../../jndn/target/jndn-android-0.15.jar')
+    // compile files('../../jndn/target/jndn-android-0.15.jar')
+    implementation 'net.named-data:jndn-android:0.18'
 
     //            {
     ////        exclude "net.named-data:jndn:0.15"
@@ -49,6 +50,7 @@ dependencies {
 
     compile project(':jndn-node')
     compile project(':jclient')
+    compile project(':jbootstrap')
 }
 
 task compileMavenProject(type: Exec) {

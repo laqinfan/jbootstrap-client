@@ -18,8 +18,7 @@ public class NodeService extends Service {
   ////////////////////////////////////////////////////////
   @Override
   public void onCreate() {
-    m_node = new NACNode();
-    m_node.init(new Name(Global.APP_PREFIX));
+    m_node = new NACNode(new Name(Global.APP_PREFIX));
   }
 
   @Override
