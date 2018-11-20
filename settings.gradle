@@ -1,0 +1,7 @@
+include ':app'
+
+include ':jndn-node'
+include ':jclient'
+
+project(':jndn-node').projectDir = new File(settingsDir, '../jndn-node')
+project(':jclient').projectDir = new File(settingsDir, '../jclient')

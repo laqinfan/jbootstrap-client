@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Sensor Data Reader [Demo]</string>
+
+    <string name="bedroom">bedroom</string>
+    <string name="log_default_text">logs...</string>
+
+
+    <string name="button_bootstrap_label">Bootstrap</string>
+    <string name="button_fetch_label">Fetch</string>
+    <string name="button_grant">Grant</string>
+    <string name="button_revoke">Revoke</string>
+</resources>
