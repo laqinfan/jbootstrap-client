@@ -4,7 +4,7 @@
     <string name="bedroom">bedroom</string>
     <string name="log_default_text">logs...</string>
 
-
+    <string name="button_register_label">Register Identity</string>
     <string name="button_bootstrap_label">Bootstrap</string>
     <string name="button_fetch_label">Fetch</string>
     <string name="button_grant">Grant</string>

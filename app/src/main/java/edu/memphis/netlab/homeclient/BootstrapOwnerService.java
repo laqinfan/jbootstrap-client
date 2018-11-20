@@ -1,5 +1,6 @@
 package edu.memphis.netlab.homeclient;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -31,7 +32,7 @@ public class BootstrapOwnerService extends NodeService {
         cfg.setNdnKeyChain(this.m_node.getKeyChain());
         BtTask btTask = new BtTask(cfg, onSuccess, onFail);
         SCHEDULED_EXECUTOR_SERVICE.submit(btTask);
-        logger.debug("submitted bttask for device {}", cfg.getDevicePairingId());
+        logger.debug("submitted BootstrapTask for device {}", cfg.getDevicePairingId());
     }
 
     private class BtTask implements Runnable {
@@ -72,10 +73,14 @@ public class BootstrapOwnerService extends NodeService {
     @Override
     public IBinder onBind(Intent intent) {
         if (!m_is_running) {
-            startService(TemperatureReaderService.newIntent(this));
+            startService(BootstrapOwnerService.newIntent(this));
         }
         m_is_running = true;
         return m_localBinder;
+    }
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, BootstrapOwnerService.class);
     }
 
     public class LocalBinder extends Binder {

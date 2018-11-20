@@ -4,18 +4,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import edu.memphis.cs.netlab.jnacconsumer.TemperatureReader;
-
 import java.io.IOException;
 import java.util.Locale;
+
+import edu.memphis.cs.netlab.jnacconsumer.TemperatureReader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +46,30 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
+    /* */
+     // TODO:
+    UIHelper.registerOnClick(MainActivity.this, R.id.button_bootstrap, new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (m_bt_bound) {
+
+          String deviceId = "SampleDevice12345";
+          String pairingCode = "unsafe";
+
+          addLog("Start Bootstrapping for " + deviceId);
+          m_bt_service.startBootStrap(
+                  deviceId,
+                  pairingCode,
+                  devicePairingId -> {
+                    addLog("Bootstrap Success : " + devicePairingId);
+                }, (devicePairingId, reason) -> {
+                    addLog("Bootstrap Failed for " + devicePairingId + "\r\nreason: " + reason);
+                });
+        }
+      }
+    });
+    // */
+
     UIHelper.registerOnClick(MainActivity.this, R.id.button_grant, new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -65,8 +89,12 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onStart() {
     super.onStart();
+
     Intent intent = TemperatureReaderService.newIntent(getApplicationContext());
     bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+    Intent intentBt = BootstrapOwnerService.newIntent(getApplicationContext());
+    bindService(intentBt, m_bt_service_conn, Context.BIND_AUTO_CREATE);
   }
 
   @Override
@@ -168,6 +196,22 @@ public class MainActivity extends AppCompatActivity {
     }
   };
 
+  private ServiceConnection m_bt_service_conn = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+      BootstrapOwnerService.LocalBinder binder = (BootstrapOwnerService.LocalBinder) iBinder;
+      m_bt_service = binder.getService();
+      m_bt_bound = true;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+      m_bt_bound = false;
+    }
+  };
+
   private boolean m_bound = false;
+  private boolean m_bt_bound = false;
   private TemperatureReaderService m_temp_service = null;
+  private BootstrapOwnerService m_bt_service = null;
 }
