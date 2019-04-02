@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import net.named_data.jndn.Name;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
       public void onClick(View v) {
         refreshTemp();
       }
+
     });
 
     UIHelper.registerOnClick(MainActivity.this, R.id.button_reg, new View.OnClickListener() {
@@ -53,18 +59,38 @@ public class MainActivity extends AppCompatActivity {
       public void onClick(View v) {
         if (m_bt_bound) {
 
-          String deviceId = "SampleDevice12345";
-          String pairingCode = "unsafe";
+          EditText et_deviceid = (EditText) findViewById(R.id.text_deviceid);
+          final String deviceId = et_deviceid.getText().toString();
+
+          EditText et_paircode = (EditText) findViewById(R.id.text_paircode);
+          final String pairingCode = et_paircode.getText().toString();
+
+          File myDir = getFilesDir();
+
+          File certificatePath = new File(getExternalFilesDir(null), "trust-anchor.cert");
+          if (!certificatePath.exists()) {
+            try {
+              certificatePath.createNewFile();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+
 
           addLog("Start Bootstrapping for " + deviceId);
-          m_bt_service.startBootStrap(
-                  deviceId,
-                  pairingCode,
-                  devicePairingId -> {
-                    addLog("Bootstrap Success : " + devicePairingId);
-                }, (devicePairingId, reason) -> {
-                    addLog("Bootstrap Failed for " + devicePairingId + "\r\nreason: " + reason);
-                });
+          try {
+            m_bt_service.startBootStrap(
+                    certificatePath,
+                    deviceId,
+                    pairingCode,
+                    devicePairingId -> {
+                      addLog("Bootstrap Success : " + devicePairingId);
+                  }, (devicePairingId, reason) -> {
+                      addLog("Bootstrap Failed for " + devicePairingId + "\r\nreason: " + reason);
+                  });
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         }
       }
     });

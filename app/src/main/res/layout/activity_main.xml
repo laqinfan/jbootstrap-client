@@ -54,6 +54,31 @@
             android:layout_height="wrap_content"
             android:text="@string/button_register_label"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/text_deviceid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="@string/deviceid"/>
+
+        <EditText
+            android:id="@+id/text_paircode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="123"/>
+
+    </LinearLayout>
+
         <Button
             android:id="@+id/button_bootstrap"
             android:layout_width="match_parent"

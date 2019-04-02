@@ -41,7 +41,7 @@ dependencies {
     
     compile 'commons-codec:commons-codec:1.10'
     // compile files('../../jndn/target/jndn-android-0.15.jar')
-    implementation 'net.named-data:jndn-android:0.18'
+    compile 'net.named-data:jndn-android:0.18'
 
     //            {
     ////        exclude "net.named-data:jndn:0.15"
