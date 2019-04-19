@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018-2019 Lei Pi, Laqin Fan
+ */
+
 package edu.memphis.netlab.homeclient;
 
 import android.content.ComponentName;
@@ -75,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
               e.printStackTrace();
             }
           }
-
 
           addLog("Start Bootstrapping for " + deviceId);
           try {

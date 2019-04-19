@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018-2019 Lei Pi
+ */
+
 package edu.memphis.netlab.homeclient;
 
 import java.util.concurrent.Executors;
@@ -22,7 +26,6 @@ public abstract class Global {
   public static final String EKEY = "/E-KEY";
   public static final String DKEY = "/D-KEY";
 
-//  public static final KeyChain KEY_CHAIN = initKeyChain(DEVICE_PREFIX + "/id");
 
   // ----------------------------------------------------------------------
   // Security Setting
