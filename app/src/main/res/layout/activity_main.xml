@@ -27,55 +27,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"/>
+
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/text_location"
+                android:id="@+id/text_deviceid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="@string/bedroom"/>
+                android:text="@string/deviceid" />
 
-            <Button
-                android:id="@+id/button_refresh_temperature"
+            <EditText
+                android:id="@+id/text_paircode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/button_fetch_label"/>
-
-        </LinearLayout>
-
-
-        <Button
-            android:id="@+id/button_reg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/button_register_label"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/text_deviceid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="@string/deviceid"/>
-
-        <EditText
-            android:id="@+id/text_paircode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="123"/>
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="123" />
 
     </LinearLayout>
 
@@ -83,19 +59,7 @@
             android:id="@+id/button_bootstrap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/button_bootstrap_label"/>
-
-        <Button
-            android:id="@+id/button_grant"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/button_grant"/>
-
-        <Button
-            android:id="@+id/button_revoke"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/button_revoke"/>
+            android:text="@string/button_bootstrap_label" />
 
         <TextView
             android:id="@+id/text_temp_reading"
@@ -113,8 +77,7 @@
             android:ems="10"
             android:gravity="top"
             android:inputType="textMultiLine"
-            android:text="@string/log_default_text"
-            />
+            android:text="@string/log_default_text" />
 
     </LinearLayout>
 

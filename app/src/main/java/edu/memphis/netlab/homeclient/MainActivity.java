@@ -8,26 +8,27 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import net.named_data.jndn.Name;
+import net.named_data.jndn.security.KeyChain;
+import net.named_data.jndn.security.SecurityException;
+import net.named_data.jndn.security.pib.AndroidSqlite3Pib;
+import net.named_data.jndn.security.pib.PibImpl;
+import net.named_data.jndn.security.tpm.TpmBackEndFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import edu.memphis.cs.netlab.jnacconsumer.TemperatureReader;
+import static edu.memphis.cs.netlab.nacapp.KeyChainHelper.pibPath;
+import static edu.memphis.cs.netlab.nacapp.KeyChainHelper.pib;
+import static edu.memphis.cs.netlab.nacapp.KeyChainHelper.keyChain;
 
 public class MainActivity extends AppCompatActivity {
-
   private static final String TAG = MainActivity.class.getName();
 
   @Override
@@ -37,27 +38,36 @@ public class MainActivity extends AppCompatActivity {
     EditText editText = (EditText) findViewById(R.id.text_main_log);
     editText.setEnabled(false);
 
-    UIHelper.registerOnClick(MainActivity.this, R.id.button_refresh_temperature,
-            new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        refreshTemp();
-      }
+    String rootPath = getApplicationContext().getFilesDir().toString();
+    Context context = getApplicationContext();
 
-    });
+    pibPath = "pib-sqlite3:" + rootPath;
 
-    UIHelper.registerOnClick(MainActivity.this, R.id.button_reg, new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (m_bound) {
-          final Runnable onSuccess = new OnRegisterIdentitySuccedss();
-          m_temp_service.registerIdentity(onSuccess);
-        }
-      }
-    });
+    try {
+      pib = new AndroidSqlite3Pib(rootPath, "/pib.db");
+    } catch (PibImpl.Error error) {
+      error.printStackTrace();
+    }
 
-    /* */
-     // TODO:
+    try {
+      pib.setTpmLocator("tpm-file:" + TpmBackEndFile.getDefaultDirecoryPath(context.getFilesDir()));
+    } catch (PibImpl.Error error) {
+      error.printStackTrace();
+    }
+
+    try {
+      keyChain = new KeyChain(pibPath, pib.getTpmLocator());
+    } catch (KeyChain.Error error) {
+      error.printStackTrace();
+    } catch (PibImpl.Error error) {
+      error.printStackTrace();
+    } catch (SecurityException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    /*bootstrap*/
     UIHelper.registerOnClick(MainActivity.this, R.id.button_bootstrap, new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -69,21 +79,9 @@ public class MainActivity extends AppCompatActivity {
           EditText et_paircode = (EditText) findViewById(R.id.text_paircode);
           final String pairingCode = et_paircode.getText().toString();
 
-          File myDir = getFilesDir();
-
-          File certificatePath = new File(getExternalFilesDir(null), "trust-anchor.cert");
-          if (!certificatePath.exists()) {
-            try {
-              certificatePath.createNewFile();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-          }
-
           addLog("Start Bootstrapping for " + deviceId);
           try {
             m_bt_service.startBootStrap(
-                    certificatePath,
                     deviceId,
                     pairingCode,
                     devicePairingId -> {
@@ -97,21 +95,6 @@ public class MainActivity extends AppCompatActivity {
         }
       }
     });
-    // */
-
-    UIHelper.registerOnClick(MainActivity.this, R.id.button_grant, new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (m_bound) {
-          EditText et = (EditText) findViewById(R.id.text_location);
-          final String location = et.getText().toString();
-          m_temp_service.requestGrantPermission(
-              location,
-              new OnRequestPermissionSuccess(),
-              new OnRequestPermissionFail());
-        }
-      }
-    });
 
   }
 
@@ -119,44 +102,11 @@ public class MainActivity extends AppCompatActivity {
   protected void onStart() {
     super.onStart();
 
-    Intent intent = TemperatureReaderService.newIntent(getApplicationContext());
-    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+//    Intent intent = TemperatureReaderService.newIntent(getApplicationContext());
+//    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
     Intent intentBt = BootstrapOwnerService.newIntent(getApplicationContext());
     bindService(intentBt, m_bt_service_conn, Context.BIND_AUTO_CREATE);
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    if (m_bound) {
-      unbindService(mConnection);
-      m_bound = false;
-    }
-  }
-
-  private class OnRegisterIdentitySuccedss implements Runnable {
-
-    @Override
-    public void run() {
-      addLog("[Success] Identity Registered");
-    }
-  }
-
-  private class OnRequestPermissionSuccess implements Runnable {
-
-    @Override
-    public void run() {
-      addLog("[Success] Permission Granted");
-    }
-  }
-
-  private class OnRequestPermissionFail implements Runnable {
-
-    @Override
-    public void run() {
-      addLog("[Fail] Permission Not Granted");
-    }
   }
 
 
@@ -169,61 +119,6 @@ public class MainActivity extends AppCompatActivity {
       Log.w(TAG, e.getMessage());
     }
   }
-
-  private void refreshTemp() {
-    addLog("start fetching temp");
-    if (m_bound) {
-      setTempReading("loading...");
-      EditText et = (EditText) findViewById(R.id.text_location);
-      final String location = et.getText().toString();
-      try {
-        m_temp_service.fetchTemperature(location, new TemperatureReader.OnDataCallback() {
-          @Override
-          public void onData(String desc, int temperature) {
-            addLog(String.format(Locale.ENGLISH, "%s : %d F", desc, temperature));
-            setTempReading(String.format(Locale.ENGLISH, "%d F", temperature));
-          }
-
-          @Override
-          public void onFail(String reason) {
-            setTempReading("ERROR");
-          }
-        });
-      } catch (IOException e) {
-        e.printStackTrace();
-        addLog(e.getMessage());
-      }
-    } else {
-      addLog("Error: temp service is not bound to current activity");
-      setTempReading("ERROR");
-    }
-  }
-
-  private void setTempReading(String reading) {
-    TextView tv = (TextView) findViewById(R.id.text_temp_reading);
-    if (null != tv) {
-      tv.setText(reading);
-    }
-  }
-
-  /**
-   * Defines callbacks for service binding, passed to bindService()
-   */
-  private ServiceConnection mConnection = new ServiceConnection() {
-
-    @Override
-    public void onServiceConnected(ComponentName className,
-                                   IBinder service) {
-      TemperatureReaderService.LocalBinder binder = (TemperatureReaderService.LocalBinder) service;
-      m_temp_service = binder.getService();
-      m_bound = true;
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName arg0) {
-      m_bound = false;
-    }
-  };
 
   private ServiceConnection m_bt_service_conn = new ServiceConnection() {
     @Override
@@ -241,6 +136,5 @@ public class MainActivity extends AppCompatActivity {
 
   private boolean m_bound = false;
   private boolean m_bt_bound = false;
-  private TemperatureReaderService m_temp_service = null;
   private BootstrapOwnerService m_bt_service = null;
 }
