@@ -9,6 +9,6 @@
     <string name="button_fetch_label">Fetch</string>
     <string name="button_grant">Grant</string>
     <string name="button_revoke">Revoke</string>
-    <string name="deviceid">deviceid</string>
-    <string name="paircode">paircode</string>
+    <string name="deviceid">Enter a deviceid</string>
+    <string name="paircode">Enter a paircode</string>
 </resources>
